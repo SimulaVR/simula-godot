@@ -377,10 +377,10 @@ processGrabEvent gwcomp gsc obj pressed clickPos = atomically (readTVar (_gwcGra
   -- * release once any controller is released
 
 pattern OVR_Button_Touchpad :: Int
-pattern OVR_Button_Touchpad = 32
+pattern OVR_Button_Touchpad = 14
 
 pattern OVR_Button_Trigger :: Int
-pattern OVR_Button_Trigger = 33
+pattern OVR_Button_Trigger = 15
 
 pattern OVR_Button_AppMenu :: Int
 pattern OVR_Button_AppMenu = 1
