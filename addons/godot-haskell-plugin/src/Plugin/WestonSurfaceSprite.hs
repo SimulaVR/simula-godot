@@ -1,3 +1,4 @@
+{-# LANGUAGE LambdaCase            #-}
 {-# LANGUAGE DataKinds             #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
@@ -43,6 +44,7 @@ import Foreign
 data GodotWestonSurfaceSprite = GodotWestonSurfaceSprite
   { _gwssObj     :: GodotObject
   , _gwssShouldMove :: TVar Bool
+  , _gwssAlwaysFace :: TVar Bool
   , _gwssSprite :: TVar GodotSprite3D
   , _gwssShape :: TVar GodotBoxShape
   , _gwssTexture :: TVar GodotWestonSurfaceTexture
@@ -59,14 +61,20 @@ instance ClassExport GodotWestonSurfaceSprite where
   classInit obj = 
     GodotWestonSurfaceSprite obj
                   <$> atomically (newTVar True)
-                  <*> atomically (newTVar (error "didn't init sprite")) <*> atomically (newTVar (error "didn't init shape")) 
-                  <*> atomically (newTVar (error "didn't init texture")) <*> atomically (newTVar (error "didn't init seat"))
+                  <*> atomically (newTVar True)
+                  <*> atomically (newTVar (error "didn't init sprite"))
+                  <*> atomically (newTVar (error "didn't init shape"))
+                  <*> atomically (newTVar (error "didn't init texture"))
+                  <*> atomically (newTVar (error "didn't init seat"))
   classExtends = "KinematicBody"
-  classMethods = [Func NoRPC "_input_event" input]
+  classMethods =
+    [ Func NoRPC "_input_event" input
+    , Func NoRPC "_process" process
+    ]
 
 instance HasBaseClass GodotWestonSurfaceSprite where
   type BaseClass GodotWestonSurfaceSprite = GodotKinematicBody       
-  super (GodotWestonSurfaceSprite obj _ _ _ _ _ ) = GodotKinematicBody obj
+  super (GodotWestonSurfaceSprite obj _ _ _ _ _ _ ) = GodotKinematicBody obj
 
 newGodotWestonSurfaceSprite :: GodotWestonSurfaceTexture -> WestonSeat -> IO GodotWestonSurfaceSprite
 newGodotWestonSurfaceSprite tex seat = do
@@ -233,3 +241,14 @@ processClickEvent gwss evt clickPos = do
     toWestonButton BUTTON_WHEEL_DOWN = 0x150
     toWestonButton _ = 0x110
 
+process :: GodotFunc GodotWestonSurfaceSprite
+process _ self _ = do
+  -- | Always face camera if _gwssAlwaysFace is set to True (default)
+  whenM (readTVarIO $ _gwssAlwaysFace self) $
+    self `getNode` "../../ARVROrigin/ARVRCamera" >>= \case
+      Just hmd -> do
+        camPos <- G.get_global_transform (GodotSpatial $ safeCast hmd)
+          >>= godot_transform_get_origin
+        (self `G.look_at` camPos) #<< V3 0 1 0
+      Nothing -> return ()
+  toLowLevel VariantNil
