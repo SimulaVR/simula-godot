@@ -81,6 +81,7 @@ newGodotWestonSurfaceSprite tex seat = do
   obj <- deRefStablePtr $ castPtrToStablePtr objPtr
 
   sprite <- (GodotSprite3D <$> mkClassInstance "Sprite3D")
+  G.set_pixel_size sprite 0.001
   G.add_child obj (safeCast sprite) True
   G.set_flip_h sprite True
 
