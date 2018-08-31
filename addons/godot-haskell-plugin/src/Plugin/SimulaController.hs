@@ -1,3 +1,4 @@
+{-# LANGUAGE LambdaCase            #-}
 {-# LANGUAGE MultiWayIf            #-}
 {-# LANGUAGE DataKinds             #-}
 {-# LANGUAGE FlexibleInstances     #-}
@@ -120,6 +121,16 @@ process _ self _ = do
      | visible -> do
          isColliding <- G.is_colliding (_gscRayCast self)
          G.set_visible (_gscLaser self) isColliding
+
+         if | isColliding ->
+                G.get_collider (_gscRayCast self)
+                  >>= tryObjectCast @GodotWestonSurfaceSprite
+                  >>= \case
+                    Just window -> do
+                      pos <- G.get_collision_point (_gscRayCast self)
+                      processClickEvent window Motion pos
+                    Nothing -> return ()
+            | otherwise -> return ()
      | otherwise -> do
          cname <- G.get_controller_name self >>= fromLowLevel
          mMesh <- load_controller_mesh self  cname
