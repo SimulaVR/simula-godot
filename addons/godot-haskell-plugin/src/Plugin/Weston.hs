@@ -1,3 +1,4 @@
+{-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE DataKinds             #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
@@ -83,8 +84,9 @@ onReady gwc = do
   where
     connectController ct = do
       btnPressed <- toLowLevel "button_pressed"
-      btnReleased <- toLowLevel "button_released"
+      btnReleased <- toLowLevel "button_release"
       btnSignal <- toLowLevel "on_button_signal"
+
       argsPressed <- Api.godot_array_new 
       toLowLevel (toVariant ct) >>= Api.godot_array_append  argsPressed
       toLowLevel (toVariant True) >>= Api.godot_array_append argsPressed
@@ -296,8 +298,6 @@ input _ self args = do
     toState pressed | pressed = WlKeyboardKeyStatePressed
                     | otherwise = WlKeyboardKeyStateReleased
 
-
-
 on_button_signal :: GodotFunc GodotWestonCompositor
 on_button_signal _ self args = do
   case toList args of
@@ -310,21 +310,30 @@ on_button_signal _ self args = do
     _ -> return ()
   toLowLevel VariantNil
 
-
 onButton :: GodotWestonCompositor -> GodotSimulaController -> Int -> Bool -> IO ()
 onButton self gsc button pressed = do
-  whenM (G.is_colliding rc) $ do
-    obj <- G.get_collider rc
-    maybeSprite <- tryObjectCast @GodotWestonSurfaceSprite obj
-    case maybeSprite of
-      Just sprite -> onSpriteButton sprite
-      Nothing -> return ()
+  isColliding <- G.is_colliding rc
+  if | isColliding -> do
+         obj <- G.get_collider rc
+         maybeSprite <- tryObjectCast @GodotWestonSurfaceSprite obj
+         case maybeSprite of
+           Just sprite -> G.get_collision_point rc >>= onSpriteButton sprite
+           Nothing -> return ()
+     | otherwise ->
+         atomically (readTVar (_gwcGrabState self)) >>= \case
+           Dragging ct1@(ctrlr,_) curWindow ->
+             G.get_global_transform ctrlr
+               >>= Api.godot_transform_get_origin
+               >>= onSpriteButton curWindow
+           _ -> return ()
   where
     rc = _gscRayCast gsc
-    onSpriteButton sprite = G.get_collision_point rc >>= case button of
-      OVR_Button_Grip -> processGrabEvent self gsc sprite pressed
-      OVR_Button_Trigger -> processClickEvent sprite (Button pressed BUTTON_LEFT)
-      OVR_Button_AppMenu -> processClickEvent sprite (Button pressed BUTTON_RIGHT)
+    onSpriteButton sprite =
+      case button of
+        OVR_Button_Grip -> processGrabEvent self gsc sprite pressed
+        OVR_Button_Trigger -> processClickEvent sprite (Button pressed BUTTON_LEFT)
+        OVR_Button_AppMenu -> processClickEvent sprite (Button pressed BUTTON_RIGHT)
+        _ -> \_ -> return ()
   
 process :: GodotFunc GodotWestonCompositor
 process _ self _ = do
@@ -371,7 +380,6 @@ processGrabEvent gwcomp gsc obj pressed clickPos = atomically (readTVar (_gwcGra
     stopResize cts@[ct1,ct2] curWindow = do
       atomically $ writeTVar (_gwcGrabState gwcomp) NoGrab
 
-    
   -- if 1 controller hits: drag
   -- if 2 controllers hit same surface: resize
   -- * release once any controller is released
