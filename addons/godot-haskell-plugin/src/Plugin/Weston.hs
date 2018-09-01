@@ -99,7 +99,16 @@ startBaseCompositor _ compositor _ = do
   faceCamera hmd spatial = do
     camPos <- G.get_global_transform (safeCast hmd :: GodotSpatial)
       >>= Api.godot_transform_get_origin
-    (spatial `G.look_at` camPos) #<< V3 0 1 0
+    spatialOrig <- G.get_global_transform spatial
+      >>= Api.godot_transform_get_origin
+    whenM (not <$> isSameHoriz spatialOrig camPos)
+      $ (spatial `G.look_at` camPos) #<< V3 0 1 0
+
+  isSameHoriz :: GodotVector3 -> GodotVector3 -> IO Bool
+  isSameHoriz a b = do
+    (V3 x _ z) <- fromLowLevel a :: IO (V3 Float)
+    (V3 x' _ z') <- fromLowLevel b :: IO (V3 Float)
+    return $ (V2 x z) == (V2 x' z')
 
   getCamera :: GodotNode -> IO (Maybe GodotARVRCamera)
   getCamera nd = nd `getNode` "../ARVROrigin/ARVRCamera" >>= \case
@@ -356,7 +365,7 @@ onButton self gsc button pressed = do
     rc = _gscRayCast gsc
     onSpriteButton sprite = G.get_collision_point rc >>= case button of
       OVR_Button_Grip -> processGrabEvent self gsc sprite pressed
-      OVR_Button_Trigger -> processClickEvent sprite (Button pressed BUTTON_LEFT)
+      {-OVR_Button_Trigger -> processClickEvent sprite (Button pressed BUTTON_LEFT)-}
       OVR_Button_AppMenu -> processClickEvent sprite (Button pressed BUTTON_RIGHT)
       _ -> \_ -> return ()
   
