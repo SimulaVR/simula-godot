@@ -66,6 +66,7 @@ instance ClassExport GodotWestonCompositor where
   classExtends = "Node"
   classMethods = [ Func NoRPC "_ready" startBaseCompositor
                  , Func NoRPC "_input" input
+                 , Func NoRPC "_process" process
                  , Func NoRPC "on_button_signal" on_button_signal ]
 
 startBaseCompositor :: GodotFunc GodotWestonCompositor 
@@ -245,7 +246,10 @@ moveToUnoccupied gwc gwss = do
   aabb <- G.get_aabb sprite
   size <- Api.godot_aabb_get_size aabb >>= fromLowLevel
   let sizeX = size ^. _x
-  let newPos = if abs minX < abs maxX then V3 (minX - sizeX/2) 0 0 else V3 (maxX + sizeX/2) 0 0
+  let newPos =
+        if abs minX < abs maxX
+        then V3 (minX - sizeX/2) 0 0
+        else V3 (maxX + sizeX/2) 0 0
   print extents
   print newPos
   tlVec <- toLowLevel newPos
@@ -328,16 +332,27 @@ onButton self gsc button pressed = do
   
 process :: GodotFunc GodotWestonCompositor
 process _ self _ = do
-  state <- atomically $ readTVar (_gwcGrabState self)
-  case state of
+  atomically (readTVar (_gwcGrabState self))
+    >>= handleState
+    >>= atomically . writeTVar (_gwcGrabState self)
+
+  toLowLevel VariantNil
+ where
+  handleState = \case
     Resizing ((ct1, origpos1), (ct2, origpos2)) window origDistance -> do
       newpos1 <- G.to_global ct1 origpos1
       newpos2 <- G.to_global ct2 origpos2
       dist <-  realToFrac <$> Api.godot_vector3_distance_to newpos1 newpos2
+
+      newpos1' <- G.to_local ct1 newpos1
+      newpos2' <- G.to_local ct2 newpos2
+
       let scale = dist/origDistance
       toLowLevel (V3 scale scale scale) >>= G.scale_object_local window
-    _ -> return ()
-  toLowLevel VariantNil
+
+      return $ Resizing ((ct1, newpos1'), (ct2, newpos2')) window dist
+
+    state -> return state
 
 processGrabEvent :: GodotWestonCompositor -> GodotSimulaController -> GodotWestonSurfaceSprite -> Bool -> GodotVector3 -> IO ()
 processGrabEvent gwcomp gsc obj pressed clickPos = atomically (readTVar (_gwcGrabState gwcomp)) >>= \case
