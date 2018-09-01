@@ -63,17 +63,48 @@ instance ClassExport GodotWestonCompositor where
   classInit obj  = GodotWestonCompositor obj <$> atomically (newTVar undefined) <*> atomically (newTVar mempty) <*> atomically (newTVar undefined)
                    <*> atomically (newTVar undefined) <*> atomically (newTVar NoGrab)
     
-  classExtends = "Node"
+  classExtends = "Spatial"
   classMethods = [ Func NoRPC "_ready" startBaseCompositor
                  , Func NoRPC "_input" input
                  , Func NoRPC "_process" process
                  , Func NoRPC "on_button_signal" on_button_signal ]
 
-startBaseCompositor :: GodotFunc GodotWestonCompositor 
+startBaseCompositor :: GodotFunc GodotWestonCompositor
 startBaseCompositor _ compositor _ = do
   onReady compositor
+
+  getCamera (safeCast compositor) >>= \case
+    Just hmd -> do
+      let comp = safeCast compositor :: GodotSpatial
+      -- | Position in front of camera
+      -- FIXME: Messes with moveToUnoccupied and makes windows stack
+      posInfront hmd comp
+
+      -- | Face the camera
+      faceCamera hmd comp
+    Nothing -> return ()
+
   startBaseThread compositor
   toLowLevel VariantNil
+ where
+  posInfront cam comp = do
+    TF b _ <- comp & G.get_global_transform >>= fromLowLevel
+    TF camBasis camPos <- G.get_global_transform cam >>= fromLowLevel
+    let dist = 1 -- ^ Distance from camera
+        fw = negate $ camBasis ^. _z
+        newPos = camPos + fw ^* dist + V3 0 0.5 0
+    G.set_global_transform comp #<< TF b newPos
+
+  faceCamera :: GodotARVRCamera -> GodotSpatial -> IO ()
+  faceCamera hmd spatial = do
+    camPos <- G.get_global_transform (safeCast hmd :: GodotSpatial)
+      >>= Api.godot_transform_get_origin
+    (spatial `G.look_at` camPos) #<< V3 0 1 0
+
+  getCamera :: GodotNode -> IO (Maybe GodotARVRCamera)
+  getCamera nd = nd `getNode` "../ARVROrigin/ARVRCamera" >>= \case
+    Just cam -> return $ Just $ GodotARVRCamera $ safeCast cam
+    Nothing -> return Nothing
 
 onReady :: GodotWestonCompositor -> IO ()
 onReady gwc = do
@@ -255,10 +286,9 @@ moveToUnoccupied gwc gwss = do
   tlVec <- toLowLevel newPos
   G.translate gwss tlVec
 
-
 instance HasBaseClass GodotWestonCompositor where
-  type BaseClass GodotWestonCompositor = GodotNode         
-  super (GodotWestonCompositor obj  _ _ _ _ _) = GodotNode obj
+  type BaseClass GodotWestonCompositor = GodotSpatial
+  super (GodotWestonCompositor obj  _ _ _ _ _) = GodotSpatial obj
 
 getSeat :: GodotWestonCompositor -> IO WestonSeat
 getSeat gwc = do 
