@@ -365,7 +365,8 @@ onButton self gsc button pressed = do
     rc = _gscRayCast gsc
     onSpriteButton sprite = G.get_collision_point rc >>= case button of
       OVR_Button_Grip -> processGrabEvent self gsc sprite pressed
-      {-OVR_Button_Trigger -> processClickEvent sprite (Button pressed BUTTON_LEFT)-}
+      -- FIXME: Input produces a crash
+      OVR_Button_Trigger -> processClickEvent sprite (Button pressed BUTTON_LEFT)
       OVR_Button_AppMenu -> processClickEvent sprite (Button pressed BUTTON_RIGHT)
       _ -> \_ -> return ()
   
