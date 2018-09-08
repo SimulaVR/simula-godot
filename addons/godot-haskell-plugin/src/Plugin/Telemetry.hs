@@ -20,7 +20,6 @@ import           Data.UUID.V1
 import           Control.Monad
 import           Data.Time.Clock
 import           Data.Time.ISO8601
--- import           Control.Concurrent.MVar
 import           Control.Concurrent.STM.TVar
 import           Data.Maybe
 import qualified Data.Map.Strict as M
@@ -37,13 +36,11 @@ data Payload = Payload
                }
 
 -- Denotes our MixPanel "project ID".
-mixPanelToken = "5ad417357e3a80fa426d272473d8dee4" :: String -- testing token
---            = "d893bae9548d8e678cef251fd81df486" :: String -- actual Simula token
+mixPanelToken = "d893bae9548d8e678cef251fd81df486" :: String -- actual Simula token
+--            = "5ad417357e3a80fa426d272473d8dee4" :: String -- testing token
 
--- TODO: Avoid potential UUID collisions (astronomical chance this could happen).
 getExistingOrNewUUID :: IO (UUID)
 getExistingOrNewUUID = do exists                 <- doesFileExist "./UUID"
-                          -- randomUUID             <- Data.UUID.V4.nextRandom
                           maybeRandomUUID             <- Data.UUID.V1.nextUUID
                           let randomUUID = fromMaybe nil maybeRandomUUID
                           let randomUUIDToString =  (Data.UUID.toString randomUUID)
@@ -94,14 +91,6 @@ ensureUUIDIsRegistered = do
   -- Send the request and print the response.
   response <- httpLbs request manager
   return ()
-
--- TODO: Delete this testing function.
-repeatedlyDoSlowStuffInBackground = forkIO doStuff
-    where
-    doStuff = do
-        forkIO (print "5")
-        threadDelay (1000 * 1000 * 60 * 1) -- last number represents minutes
-        doStuff
 
 getTelemetryEnabledStatus :: IO Bool
 getTelemetryEnabledStatus = doesFileExist "./UUID"

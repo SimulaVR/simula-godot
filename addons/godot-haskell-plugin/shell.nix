@@ -5,20 +5,13 @@ pkgs.haskell.lib.buildStackProject {
   inherit ghc;
   buildInputs = with pkgs; [ 
                              mesa
-                          #  gcc7
                              pkgconfig
                              xorg.pixman
                              wayland-protocols
                              wayland
                              weston
                              xorg.libX11 # possibly not needed
-                          #  dbus
-                          #  (callPackage simula-wayland/weston3.nix { })
-                          #  (callPackage simula-openvr/openvr.nix { })
-                          #  libxml2
                              libxkbcommon
-                          #  vulkan-loader
-                          #  steam
                              git
                              zlib
                           ];
