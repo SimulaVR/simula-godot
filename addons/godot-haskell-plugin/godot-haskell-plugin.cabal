@@ -42,6 +42,22 @@ library
     , clock
     , extra
     , lens
+    , bytestring
+    , http-client
+    , http-types
+    , http-client-tls
+--  , http-querystring
+    , aeson
+    , optparse-applicative
+    , turtle >= 1.3.5
+    , text
+    , process
+    , semigroups
+    , base64-bytestring
+    , directory
+    , uuid
+    , time
+    , iso8601-time
   exposed-modules:
       Plugin
       Plugin.Imports
@@ -53,6 +69,7 @@ library
       Plugin.WestonSurfaceSprite
       Plugin.Weston
       Plugin.SimulaController
+      Plugin.Telemetry
 
   default-language: Haskell2010
   default-extensions:  OverloadedStrings TypeOperators FlexibleContexts FlexibleInstances TypeApplications ScopedTypeVariables PatternSynonyms
