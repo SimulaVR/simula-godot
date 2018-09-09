@@ -42,7 +42,7 @@ import Control.Lens
 
 import Foreign hiding (void)
 
-import Plugin.Telemetry
+import Telemetry
 
 data GrabState
   = NoGrab

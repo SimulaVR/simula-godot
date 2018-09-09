@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings   #-}
 
-module Plugin.Telemetry where
+module Telemetry where
 
 import           Data.Aeson
 import qualified Data.ByteString         as BS
