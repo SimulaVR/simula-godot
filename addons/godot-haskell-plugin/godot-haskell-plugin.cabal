@@ -27,7 +27,8 @@ source-repository head
 
 library
   hs-source-dirs: src, telemetry
-
+  -- SE: https://stackoverflow.com/questions/52245576/conditional-cabal-build-flag-failing
+  --- /r/haskell: https://www.reddit.com/r/haskell/comments/9eo2pr/conditional_cabal_build_flag_failing/
   -- The following fails to work (https://stackoverflow.com/questions/52245576/conditional-cabal-build-flag-failing)
   -- if flag(no-tracking)
   --    hs-source-dirs: src, no-telemetry
