@@ -25,15 +25,15 @@ source-repository head
   type: git
   location: https://github.com/KaneTW/godot-haskell-plugin
 
+flag no-tracking
+  default:     False
+  manual:      True
+
 library
-  hs-source-dirs: src, telemetry
-  -- SE: https://stackoverflow.com/questions/52245576/conditional-cabal-build-flag-failing
-  --- /r/haskell: https://www.reddit.com/r/haskell/comments/9eo2pr/conditional_cabal_build_flag_failing/
-  -- The following fails to work (https://stackoverflow.com/questions/52245576/conditional-cabal-build-flag-failing)
-  -- if flag(no-tracking)
-  --    hs-source-dirs: src, no-telemetry
-  -- else
-  --    hs-source-dirs: src, telemetry
+  if flag(no-tracking)
+     hs-source-dirs: src, no-telemetry
+  else
+     hs-source-dirs: src, telemetry
 
   build-depends:
       base >=4.7 && <5
