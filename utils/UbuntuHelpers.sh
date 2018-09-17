@@ -4,16 +4,17 @@ installUbuntuDependencies() {
        libweston-3-dev  \
        libegl1-mesa-dev \
        weston           \    # for weston-terminal
-       epiphany-browser  # for wayland capable web browser
+       epiphany-browser \  # for wayland capable web browser
+       steam
 }
 
-installSteam() {
-     if [ -z `which steam` ]; then
-         sudo add-apt-repository multiverse
-         sudo apt update
-         sudo apt install steam # should include udev rules by default (https://github.com/ValveSoftware/SteamVR-for-Linux#usb-device-requirements)
-     fi
-}
+# installSteam() {
+#      if [ -z `which steam` ]; then
+#          sudo add-apt-repository multiverse
+#          sudo apt update
+#          sudo apt install steam # should include udev rules by default (https://github.com/ValveSoftware/SteamVR-for-Linux#usb-device-requirements)
+#      fi
+# }
  
 installNvidiaDrivers() {
      # See https://github.com/ValveSoftware/SteamVR-for-Linux
@@ -69,7 +70,7 @@ makeRTSBinaryMultithreaded () {
 
 buildSimulaDependencies() {
   installUbuntuDependencies 
-  installSteam
+  # installSteam
   # installNvidiaDrivers
   installStack
   upgradeStack
