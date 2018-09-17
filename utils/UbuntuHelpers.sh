@@ -5,16 +5,16 @@ installUbuntuDependencies() {
        libegl1-mesa-dev \
        weston           \
        epiphany-browser \
-       steam
+       curl
 }
 
-# installSteam() {
-#      if [ -z `which steam` ]; then
-#          sudo add-apt-repository multiverse
-#          sudo apt update
-#          sudo apt install steam # should include udev rules by default (https://github.com/ValveSoftware/SteamVR-for-Linux#usb-device-requirements)
-#      fi
-# }
+installSteam() {
+     if [ -z `which steam` ]; then
+         sudo add-apt-repository multiverse
+         sudo apt update
+         sudo apt install steam # should include udev rules by default (https://github.com/ValveSoftware/SteamVR-for-Linux#usb-device-requirements)
+     fi
+}
  
 installNvidiaDrivers() {
      # See https://github.com/ValveSoftware/SteamVR-for-Linux
@@ -46,7 +46,7 @@ installGodot() {
 # old versions found in Ubuntu's package stores.
 installStack() {
     if [ -z `which stack` ]; then
-      curl -sSL https://get.haskellstack.org/ | sh -s - f
+      curl -sSL https://get.haskellstack.org/ | sh -s - -f
       echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc # ensures stack programs like hpack are on your PATH
       . ~/.bashrc
     else 
@@ -70,7 +70,7 @@ makeRTSBinaryMultithreaded () {
 
 buildSimulaDependencies() {
   installUbuntuDependencies 
-  # installSteam
+  installSteam
   # installNvidiaDrivers
   installStack
   upgradeStack
