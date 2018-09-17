@@ -3,8 +3,8 @@ installUbuntuDependencies() {
        libpixman-1-dev  \
        libweston-3-dev  \
        libegl1-mesa-dev \
-       weston           \    # for weston-terminal
-       epiphany-browser \  # for wayland capable web browser
+       weston           \
+       epiphany-browser \
        steam
 }
 
