@@ -73,5 +73,5 @@ require-stack-version: ">=1.7"
 # compiler-check: newer-minor
 
 nix:
-  enable: true
+  enable: false
   shell-file: shell.nix 
