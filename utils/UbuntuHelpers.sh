@@ -29,6 +29,11 @@ installNvidiaDrivers() {
      #    sudo aptitude install nvidia-driver-396
 }
 
+installAMDDrivers() {
+  # ensure that mesa-17.3+ is installed.
+  echo "TODO."
+}
+
 # Assumes our target is godot.x11.tools.64
 installGodot() {
   sudo apt-get install build-essential scons pkg-config libx11-dev libxcursor-dev libxinerama-dev \
