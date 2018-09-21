@@ -91,6 +91,10 @@ If you're interested in a future where Linux and VR co-exist, you can donate to 
   - Vive donations to contributors (x 3)
   - 
 
+* Plans & Monthly Updates
+
+See Simula's [[https://github.com/SimulaVR/Simula/wiki][Wiki]] for our Master Plan and a list of our Monthly Updates.
+
 * TODO COMMENT TODOs
 - [ ] SteamVR-for-Linux link
 - [X] Explicit video link.
