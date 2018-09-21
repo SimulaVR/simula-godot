@@ -1,18 +1,21 @@
 [[file:./doc/TEMP_LOGO.png]]
 
-Simula is a 3D window manager for Linux. 
+Simula is a 3D window manager for Linux that runs on top of the [[https://godotengine.org/][Godot open-source game engine]].
 
 [[https://d.tube/#!/v/sudoreboot/t026ny0m][file:./doc/SimulaDesktop.png]]
+
+*Video:* [[https://d.tube/#!/v/sudoreboot/t026ny0m][See here.]]
 
 *Mission:* Facilitate a Linux future for VR & AR Desktop. In the short-run, this means allowing people to run 2D Linux apps with current generation headsets. In the long-run, this means allowing people to run Linux in standalone AR & VR HMDs. Currently, Simula is aiming to be compatible with the HTC Vive. 
 
 *Origins:* Simula is a reimplementation fork of [[https://github.com/evil0sheep/motorcar][motorcar]]. To read about motorcar, see /[[https://github.com/evil0sheep/MastersThesis/blob/master/thesis.pdf?raw=true][Toward General Purpose 3D User Interfaces: Extending Windowing Systems to Three Dimensions]]/
 
-[[https://gitter.im/SimulaVR/Simula][file:./doc/GitterBadge.png]]
 
 * Installation
 
-*Chat room.* Simula is in alpha phase, and can be difficult to get working on many setups. For help with installation, please visit our [[https://gitter.im/SimulaVR/Simula][chat room]].
+[[https://gitter.im/SimulaVR/Simula][file:./doc/GitterBadge.png]]
+
+Simula is in alpha phase, and can be difficult to get working on many setups. For help with installation, please visit our [[https://gitter.im/SimulaVR/Simula][chat room]].
 
 ** Ubuntu/Debian
 
@@ -66,6 +69,7 @@ Simula has only been tested on Ubuntu bionic beaver (18.04), but the instruction
 
 Pending.
 
+
 * Contributing
 
 We're looking for open-source contributors. If you're interested in using Haskell to bring VR and Linux together, drop by our [[https://gitter.im/SimulaVR/Simula][chat room]], or email georgewsinger@gmail.com.
@@ -85,3 +89,8 @@ If you're interested in a future where Linux and VR co-exist, you can donate to 
 *Project Expenses.* Donations to the project pay for the following expenses:
   - Part-time developers (x 1)
   - Vive donations to contributors (x 3)
+  - 
+
+* TODO COMMENT TODOs
+- [ ] SteamVR-for-Linux link
+- [X] Explicit video link.
