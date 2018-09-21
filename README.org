@@ -1,6 +1,6 @@
 [[file:./doc/TEMP_LOGO.png]]
 
-Simula is a 3D window manager for Linux that runs on top of the [[https://godotengine.org/][Godot open-source game engine]].
+Simula is a 3D window manager for Linux that runs on top of [[https://godotengine.org/][Godot]].
 
 [[https://d.tube/#!/v/sudoreboot/t026ny0m][file:./doc/SimulaDesktop.png]]
 
