@@ -24,7 +24,7 @@ Simula has only been tested on Ubuntu bionic beaver (18.04), but the instruction
 1. *Clone the repo and run the helper commands.*
 
   #+BEGIN_SRC shell
-  git clone --recursive https://github.com/SimulaVR/Simula
+  git clone --recursive https://github.com/SimulaVR/simula-godot -b telemetry simula-godot
   cd Simula
   source utils/UbuntuHelpers.sh
 
